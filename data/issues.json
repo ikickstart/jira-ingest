@@ -1,0 +1,354 @@
+{
+  "expand": "schema,names",
+  "startAt": 0,
+  "maxResults": 50,
+  "total": 5,
+  "issues": [
+    {
+      "id": "10412",
+      "key": "PLAT-2291",
+      "self": "https://acme.atlassian.net/rest/api/3/issue/10412",
+      "fields": {
+        "summary": "checkout-service deploy blocked on staging",
+        "description": "Deploy to staging has been failing since this morning. Pipeline goes red at the migration step. Blocking the 4.2 release.",
+        "issuetype": {
+          "name": "Bug"
+        },
+        "status": {
+          "name": "Done",
+          "statusCategory": {
+            "key": "done"
+          }
+        },
+        "priority": {
+          "name": "Highest"
+        },
+        "resolution": {
+          "name": "Fixed"
+        },
+        "created": "2026-09-14T08:12:04.000+0530",
+        "updated": "2026-09-16T17:44:51.000+0530",
+        "resolutiondate": "2026-09-16T17:44:51.000+0530",
+        "reporter": {
+          "accountId": "5f8a1c",
+          "displayName": "Meera Raghavan",
+          "emailAddress": "meera.r@acme.example"
+        },
+        "assignee": {
+          "accountId": "6b2d90",
+          "displayName": "Tom Whitfield",
+          "emailAddress": "tom.w@acme.example"
+        },
+        "components": [
+          {
+            "name": "checkout-service"
+          }
+        ],
+        "labels": [
+          "deploy",
+          "release-4.2"
+        ],
+        "comment": {
+          "total": 8,
+          "comments": [
+            {
+              "id": "31001",
+              "author": {
+                "displayName": "Tom Whitfield"
+              },
+              "created": "2026-09-14T09:02:11.000+0530",
+              "body": "Looking at it."
+            },
+            {
+              "id": "31002",
+              "author": {
+                "displayName": "Meera Raghavan"
+              },
+              "created": "2026-09-14T09:40:33.000+0530",
+              "body": "Is this the same as the failure we saw in August? That one was a connection pool thing."
+            },
+            {
+              "id": "31003",
+              "author": {
+                "displayName": "Tom Whitfield"
+              },
+              "created": "2026-09-14T11:15:02.000+0530",
+              "body": "Don't think so. That was on the reporting DB. This is checkout."
+            },
+            {
+              "id": "31004",
+              "author": {
+                "displayName": "Arjun Patel"
+              },
+              "created": "2026-09-15T10:21:47.000+0530",
+              "body": "+1 we are blocked on this too for the promo work"
+            },
+            {
+              "id": "31005",
+              "author": {
+                "displayName": "Tom Whitfield"
+              },
+              "created": "2026-09-15T14:55:19.000+0530",
+              "body": "Narrowed it down. The migration runner is timing out but the migration itself completes. So the pipeline thinks it failed when it didn't."
+            },
+            {
+              "id": "31006",
+              "author": {
+                "displayName": "Meera Raghavan"
+              },
+              "created": "2026-09-15T15:02:08.000+0530",
+              "body": "ugh"
+            },
+            {
+              "id": "31007",
+              "author": {
+                "displayName": "Tom Whitfield"
+              },
+              "created": "2026-09-16T11:30:44.000+0530",
+              "body": "Talked to infra. They bumped the RDS instance last week and the migration lock behaviour changed."
+            },
+            {
+              "id": "31008",
+              "author": {
+                "displayName": "Tom Whitfield"
+              },
+              "created": "2026-09-16T17:44:12.000+0530",
+              "body": "*Fixed.* Root cause: the migration runner had a hardcoded 30s timeout and after the RDS upgrade the ALTER TABLE on checkout_orders takes ~45s because the table grew past 12M rows. Raised the timeout to 300s in {code}deploy/migrate.sh{code} and added a --lock-timeout flag so it fails loudly instead of hanging. Deployed to staging, pipeline is green. Longer term we should run large migrations out of band, raised PLAT-2310 for that."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "10455",
+      "key": "PLAT-2310",
+      "self": "https://acme.atlassian.net/rest/api/3/issue/10455",
+      "fields": {
+        "summary": "Run large migrations out of band",
+        "description": "Follow-up from PLAT-2291. Migrations on tables over ~10M rows should not run inside the deploy pipeline. Need a separate runner with its own timeout and a way to gate the deploy on completion.",
+        "issuetype": {
+          "name": "Task"
+        },
+        "status": {
+          "name": "In Progress",
+          "statusCategory": {
+            "key": "indeterminate"
+          }
+        },
+        "priority": {
+          "name": "Medium"
+        },
+        "resolution": null,
+        "created": "2026-09-16T17:50:02.000+0530",
+        "updated": "2026-09-22T09:14:37.000+0530",
+        "resolutiondate": null,
+        "reporter": {
+          "accountId": "6b2d90",
+          "displayName": "Tom Whitfield",
+          "emailAddress": "tom.w@acme.example"
+        },
+        "assignee": null,
+        "components": [],
+        "labels": [
+          "tech-debt"
+        ],
+        "comment": {
+          "total": 2,
+          "comments": [
+            {
+              "id": "31019",
+              "author": {
+                "displayName": "Arjun Patel"
+              },
+              "created": "2026-09-17T10:05:00.000+0530",
+              "body": ""
+            },
+            {
+              "id": "31020",
+              "author": {
+                "displayName": "Priya Nair"
+              },
+              "created": "2026-09-22T09:14:37.000+0530",
+              "body": "Picking this up next sprint unless someone objects."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "10478",
+      "key": "PAY-877",
+      "self": "https://acme.atlassian.net/rest/api/3/issue/10478",
+      "fields": {
+        "summary": "Payments API returning 500 on refund for partially captured orders",
+        "description": "Refund endpoint throws when the original order was partially captured. Repro attached in comments.",
+        "issuetype": {
+          "name": "Bug"
+        },
+        "status": {
+          "name": "Done",
+          "statusCategory": {
+            "key": "done"
+          }
+        },
+        "priority": {
+          "name": "High"
+        },
+        "resolution": {
+          "name": "Fixed"
+        },
+        "created": "2026-08-28T12:04:00.000+0530",
+        "updated": "2026-09-03T16:20:11.000+0530",
+        "resolutiondate": "2026-09-03T16:20:11.000+0530",
+        "reporter": {
+          "accountId": "7c4e11",
+          "displayName": "Priya Nair",
+          "emailAddress": "priya.n@acme.example"
+        },
+        "assignee": {
+          "accountId": "7c4e11",
+          "displayName": "Priya Nair",
+          "emailAddress": "priya.n@acme.example"
+        },
+        "components": [
+          {
+            "name": "payments-api"
+          }
+        ],
+        "labels": [
+          "payments"
+        ],
+        "comment": {
+          "total": 3,
+          "comments": [
+            {
+              "id": "31101",
+              "author": {
+                "displayName": "Priya Nair"
+              },
+              "created": "2026-08-28T12:10:41.000+0530",
+              "body": "Stack trace from prod:\n\n2026-08-28T06:38:12.004Z ERROR [payments-api] [req-8813fa2b] Unhandled exception in POST /v2/refunds\njava.lang.IllegalStateException: Cannot refund amount 4500 against captured amount 3000\n\tat com.acme.payments.refund.RefundValidator.validateAmount(RefundValidator.java:88)\n\tat com.acme.payments.refund.RefundService.createRefund(RefundService.java:142)\n\tat com.acme.payments.refund.RefundController.postRefund(RefundController.java:61)\n\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:580)\n\tat org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:255)\n\tat org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:188)\n\tat org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)\n\tat org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:926)\n\tat org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:831)\n\tat org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)\n\tat org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)\n\tat org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)\n\tat org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)\n\tat org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)\n\tat jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)\n\tat org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)\n\tat jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)\n\tat org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)\n\tat org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)\n\tat org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)\n\tat org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)\n\tat org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)\n\tat org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)\n\tat org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)\n\tat org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)\n\tat org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)\n\tat org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)\n\tat org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)\n\tat org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)\n\tat org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744)\n\tat org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)\n\tat org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)\n\tat org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)\n\tat org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)\n\tat java.base/java.lang.Thread.run(Thread.java:1583)\n\nHappens on roughly 2% of refund attempts. All of them partial captures."
+            },
+            {
+              "id": "31102",
+              "author": {
+                "displayName": "Tom Whitfield"
+              },
+              "created": "2026-08-29T10:02:00.000+0530",
+              "body": "Does the validator know about captures at all, or is it comparing against the authorised amount?"
+            },
+            {
+              "id": "31103",
+              "author": {
+                "displayName": "Priya Nair"
+              },
+              "created": "2026-09-03T16:19:55.000+0530",
+              "body": "It was comparing against authorised. Fixed in PR #1184 - validator now reads captured_amount from the ledger instead. Added a regression test for the partial capture case."
+            }
+          ]
+        },
+        "security": {
+          "name": "payments-restricted"
+        }
+      }
+    },
+    {
+      "id": "10502",
+      "key": "PAY-901",
+      "self": "https://acme.atlassian.net/rest/api/3/issue/10502",
+      "fields": {
+        "summary": "Add idempotency keys to refund endpoint",
+        "description": "",
+        "issuetype": {
+          "name": "Story"
+        },
+        "status": {
+          "name": "To Do",
+          "statusCategory": {
+            "key": "new"
+          }
+        },
+        "priority": {
+          "name": "Medium"
+        },
+        "resolution": null,
+        "created": "2026-09-09T11:00:00.000+0530",
+        "updated": "2026-09-09T11:00:00.000+0530",
+        "resolutiondate": null,
+        "reporter": {
+          "accountId": "7c4e11",
+          "displayName": "Priya Nair",
+          "emailAddress": "priya.n@acme.example"
+        },
+        "assignee": null,
+        "components": [
+          {
+            "name": "payments-api"
+          }
+        ],
+        "labels": [],
+        "comment": {
+          "total": 0,
+          "comments": []
+        },
+        "security": {
+          "name": "payments-restricted"
+        }
+      }
+    },
+    {
+      "id": "10517",
+      "key": "OPS-140",
+      "self": "https://acme.atlassian.net/rest/api/3/issue/10517",
+      "fields": {
+        "summary": "Update on-call rotation for Q4",
+        "description": "Rotation doc needs refreshing before the quarter starts. Current doc still lists people who have left.",
+        "issuetype": {
+          "name": "Task"
+        },
+        "status": {
+          "name": "Done",
+          "statusCategory": {
+            "key": "done"
+          }
+        },
+        "priority": {
+          "name": "Low"
+        },
+        "resolution": {
+          "name": "Done"
+        },
+        "created": "2026-09-18T09:30:00.000+0530",
+        "updated": "2026-09-19T15:10:22.000+0530",
+        "resolutiondate": "2026-09-19T15:10:22.000+0530",
+        "reporter": {
+          "accountId": "5f8a1c",
+          "displayName": "Meera Raghavan",
+          "emailAddress": "meera.r@acme.example"
+        },
+        "assignee": {
+          "accountId": "5f8a1c",
+          "displayName": "Meera Raghavan",
+          "emailAddress": "meera.r@acme.example"
+        },
+        "components": [],
+        "labels": [
+          "ops"
+        ],
+        "comment": {
+          "total": 1,
+          "comments": [
+            {
+              "id": "31200",
+              "author": {
+                "displayName": "Meera Raghavan"
+              },
+              "created": "2026-09-19T15:10:22.000+0530",
+              "body": "Updated. New rotation lives in Confluence under Ops > On-call."
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
