@@ -17,7 +17,7 @@ Please think out loud throughout.
 | 2 | Describe how you would restructure it, and what a full ingestion pipeline would need. Add placeholder functions only, no implementation | 4 min |
 | 3 | Run the tests and explain why each failing test fails | 2 min |
 | 4 | Fix the failing tests and implement `ticket_to_documents()` in `main.py` | 10 min |
-| 5 | Walk us through your changes | 1 min |
+| 5 | Commit your changes on a branch in your fork and walk us through the diff as you would an MR. Do not open a PR against this repo | 1 min |
 
 ## Using AI
 
