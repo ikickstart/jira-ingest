@@ -26,6 +26,13 @@ def ticket_to_documents(ticket: dict) -> list[dict]:
       Text is the cleaned description.
     - One document per comment, if the comment body is not empty.
       Text comes from format_comment().
+
+    Returns a list of dicts, one per document:
+        [
+            {"id": "<KEY>#desc", "text": "...", "url": "..."},
+            {"id": "<KEY>#c<comment_id>", "text": "...", "url": "..."},
+            ...
+        ]
     """
     documents = []
     # TODO
